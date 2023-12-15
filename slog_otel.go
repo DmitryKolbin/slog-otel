@@ -2,6 +2,7 @@ package slogotel
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
@@ -180,10 +181,10 @@ func (h OtelHandler) slogAttrToOtelAttr(attr slog.Attr, groupKeys ...string) att
 		case []bool:
 			return attribute.BoolSlice(key, v)
 		default:
-			return attribute.KeyValue{}
+			if b, err := json.Marshal(v); b != nil && err == nil {
+				return attribute.String(key, string(b))
+			}
 		}
-	default:
-		return attribute.KeyValue{}
 	}
 
 	return attribute.KeyValue{}
