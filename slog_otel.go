@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"runtime"
 	"time"
 
 	"go.opentelemetry.io/otel/attribute"
@@ -22,7 +23,12 @@ const (
 	SpanIDKey = "span_id"
 	// SpanEventKey is the key used by the Otel handler
 	// to inject the log record in the recording span, as a span event.
-	SpanEventKey = "log_record"
+	SpanEventKey     = "log_record"
+	OtelSeverityKey  = "log.severity"
+	OtelMessaggeKey  = "log.message"
+	OtelCodeFunction = "code.function"
+	OtelFilepath     = "code.filepath"
+	OtelCodeLineNo   = "code.lineno"
 )
 
 // OtelHandler is an implementation of slog's Handler interface.
@@ -39,6 +45,9 @@ type OtelHandler struct {
 	Next slog.Handler
 	// NoBaggage determines whether to add context baggage members to the log record.
 	NoBaggage bool
+	// AddSource causes the handler to compute the source code position
+	// of the log statement and add a SourceKey attribute to the output.
+	AddSource bool
 }
 
 // HandlerFn defines the handler used by slog.Handler as return value.
@@ -77,6 +86,14 @@ func (h OtelHandler) Handle(ctx context.Context, record slog.Record) error {
 	eventAttrs = append(eventAttrs, attribute.String(slog.MessageKey, record.Message))
 	eventAttrs = append(eventAttrs, attribute.String(slog.LevelKey, record.Level.String()))
 	eventAttrs = append(eventAttrs, attribute.String(slog.TimeKey, record.Time.Format(time.RFC3339Nano)))
+	eventAttrs = append(eventAttrs, attribute.String(OtelSeverityKey, record.Level.String()))
+	eventAttrs = append(eventAttrs, attribute.String(OtelMessaggeKey, record.Message))
+	if h.AddSource {
+		sourceInfo := h.recordToSource(record)
+		eventAttrs = append(eventAttrs, attribute.String(OtelCodeFunction, sourceInfo.Function))
+		eventAttrs = append(eventAttrs, attribute.String(OtelFilepath, sourceInfo.File))
+		eventAttrs = append(eventAttrs, attribute.Int(OtelCodeLineNo, sourceInfo.Line))
+	}
 
 	record.Attrs(func(attr slog.Attr) bool {
 		otelAttr := h.slogAttrToOtelAttr(attr)
@@ -192,4 +209,14 @@ func (h OtelHandler) slogAttrToOtelAttr(attr slog.Attr, groupKeys ...string) att
 	}
 
 	return attribute.KeyValue{}
+}
+
+func (h OtelHandler) recordToSource(r slog.Record) *slog.Source {
+	fs := runtime.CallersFrames([]uintptr{r.PC})
+	f, _ := fs.Next()
+	return &slog.Source{
+		Function: f.Function,
+		File:     f.File,
+		Line:     f.Line,
+	}
 }
