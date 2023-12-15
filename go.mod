@@ -1,4 +1,4 @@
-module github.com/remychantenay/slog-otel
+module github.com/DmitryKolbin/slog-otel
 
 go 1.21
 

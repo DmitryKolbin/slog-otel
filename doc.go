@@ -10,7 +10,7 @@ Package slogotel provides a custom handler for `log/slog` to ensures strong corr
 		"go.opentelemetry.io/otel/baggage"
 		"go.opentelemetry.io/otel/trace"
 		sdktrace "go.opentelemetry.io/otel/sdk/trace"
-		slogotel "github.com/remychantenay/slog-otel"
+		slogotel "github.com/DmitryKolbin/slog-otel"
 	)
 
 	// 1. Configure slog.

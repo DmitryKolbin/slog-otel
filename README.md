@@ -1,7 +1,7 @@
 # slog-otel
-[![Go Report Card](https://goreportcard.com/badge/github.com/remychantenay/slog-otel)](https://goreportcard.com/report/github.com/remychantenay/slog-otel)
-[![codebeat badge](https://codebeat.co/badges/33ebce8f-9681-4c9c-8c43-f9ab4f197d9e)](https://codebeat.co/projects/github-com-remychantenay-slog-otel-main)
-[![GoDoc](https://godoc.org/github.com/remychantenay/slog-otel?status.svg)](https://godoc.org/github.com/remychantenay/slog-otel)
+[![Go Report Card](https://goreportcard.com/badge/github.com/DmitryKolbin/slog-otel)](https://goreportcard.com/report/github.com/DmitryKolbin/slog-otel)
+[![codebeat badge](https://codebeat.co/badges/33ebce8f-9681-4c9c-8c43-f9ab4f197d9e)](https://codebeat.co/projects/github-com-DmitryKolbin-slog-otel-main)
+[![GoDoc](https://godoc.org/github.com/DmitryKolbin/slog-otel?status.svg)](https://godoc.org/github.com/DmitryKolbin/slog-otel)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Go package that provides an implementation of `log/slog`'s [Handler interface](https://pkg.go.dev/log/slog#Handler) that ensures a strong correlation between log records and [Open-Telemetry spans](https://opentelemetry.io/docs/concepts/signals/traces/#spans) by...
@@ -22,7 +22,7 @@ import (
     "go.opentelemetry.io/otel/trace"
 
     sdktrace "go.opentelemetry.io/otel/sdk/trace"
-    slogotel "github.com/remychantenay/slog-otel"
+    slogotel "github.com/DmitryKolbin/slog-otel"
 )
 
 // 1. Configure slog.
