@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"log/slog"
 	"strings"
 	"testing"
@@ -122,14 +123,27 @@ func TestOtelHandler(t *testing.T) {
 		}, {
 			Key:   "bool_slice",
 			Value: attribute.BoolSliceValue([]bool{true, false}),
-		}, {
+		},
+			{
+				Key:   "error",
+				Value: attribute.StringValue("error"),
+			},
+			{
+				Key:   "map",
+				Value: attribute.StringValue(`{"foo":"bar"}`),
+			},
+			{
+				Key:   "struct",
+				Value: attribute.StringValue(`{"foo":"bar"}`),
+			},
+			{
 
-			Key:   "group_1.key_1",
-			Value: attribute.StringValue("value_1"),
-		}, {
-			Key:   "group_2.key_2",
-			Value: attribute.StringValue("value_2"),
-		}}
+				Key:   "group_1.key_1",
+				Value: attribute.StringValue("value_1"),
+			}, {
+				Key:   "group_2.key_2",
+				Value: attribute.StringValue("value_2"),
+			}}
 
 		func() {
 			ctx := context.Background()
@@ -153,6 +167,13 @@ func TestOtelHandler(t *testing.T) {
 				"float64_slice", float64Slice,
 				"bool_slice", boolSlice,
 				"a_key", "a_value",
+				"error", errors.New("error"),
+				"map", map[string]string{"foo": "bar"},
+				"struct", struct {
+					Foo string `json:"foo"`
+				}{
+					Foo: "bar",
+				},
 				group1,
 				group2,
 			)

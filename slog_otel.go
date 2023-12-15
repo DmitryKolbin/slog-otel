@@ -181,9 +181,13 @@ func (h OtelHandler) slogAttrToOtelAttr(attr slog.Attr, groupKeys ...string) att
 		case []bool:
 			return attribute.BoolSlice(key, v)
 		default:
+			if err, ok := v.(error); ok {
+				return attribute.String(key, fmt.Sprint(err))
+			}
 			if b, err := json.Marshal(v); b != nil && err == nil {
 				return attribute.String(key, string(b))
 			}
+
 		}
 	}
 
